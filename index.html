@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Capacity Connect — Digital Capacity Building & Learning Management Portal</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23059669' stroke-width='2'><path d='M22 10v6M2 10l10-5 10 5-10 5z'/><path d='M6 12v5c3 3 9 3 12 0v-5'/></svg>">
+
+  <!-- Inter Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- React 18 & ReactDOM 18 -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+
+  <!-- Babel Standalone for in-browser JSX parsing (Zero CORS, 100% offline file:// capable) -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    * { transition-property: color, background-color, border-color; transition-duration: 150ms; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.4); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.7); }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased selection:bg-emerald-500 selection:text-white">
+  <!-- Root React App Container -->
+  <div id="root">
+    <div class="min-h-screen flex flex-col items-center justify-center bg-slate-900 text-white">
+      <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center shadow-2xl animate-pulse mb-3">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
+        </svg>
+      </div>
+      <h2 class="text-lg font-bold tracking-tight">Capacity<span class="text-emerald-400">Connect</span></h2>
+      <p class="text-xs text-slate-400 mt-1 font-mono">Launching Standalone Frontend Portal...</p>
+    </div>
+  </div>
+
+  <!-- 100% INLINED STANDALONE REACT APPLICATION (Works directly via double-click on file://) -->
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // --- 1. SVG ICON DICTIONARY ---
+    const Icon = ({ name, size = 18, className = '', ...props }) => {
+      const icons = {
+        'search': <><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></>,
+        'bell': <><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></>,
+        'sun': <><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></>,
+        'moon': <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>,
+        'book-open': <><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></>,
+        'graduation-cap': <><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></>,
+        'award': <><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></>,
+        'shield': <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>,
+        'trending-up': <><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></>,
+        'users': <><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>,
+        'user': <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>,
+        'user-check': <><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></>,
+        'user-x': <><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></>,
+        'zap': <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>,
+        'flame': <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>,
+        'check-circle': <><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></>,
+        'x-circle': <><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></>,
+        'clock': <><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>,
+        'calendar': <><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></>,
+        'file-text': <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></>,
+        'download': <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></>,
+        'chevron-right': <polyline points="9 18 15 12 9 6"/>,
+        'chevron-left': <polyline points="15 18 9 12 15 6"/>,
+        'chevron-down': <polyline points="6 9 12 15 18 9"/>,
+        'plus': <><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></>,
+        'edit': <><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></>,
+        'trash': <><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></>,
+        'sparkles': <><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></>,
+        'bar-chart-2': <><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></>,
+        'pie-chart': <><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></>,
+        'filter': <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>,
+        'check': <polyline points="20 6 9 17 4 12"/>,
+        'alert-circle': <><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></>,
+        'star': <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>,
+        'eye': <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></>,
+        'send': <><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></>,
+        'compass': <><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></>,
+        'grid': <><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></>,
+        'layers': <><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></>,
+        'check-badge': <><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><polyline points="9 12 11 14 15 10"/></>,
+        'thumbs-up': <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>,
+        'thumbs-down': <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"/>,
+        'refresh-cw': <><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></>
+      };
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
+          {icons[name] || icons['alert-circle']}
+        </svg>
+      );
+    };
+
+    // --- 2. MODAL & TOAST ---
+    const Modal = ({ isOpen, onClose, title, subtitle, children, maxWidth = 'max-w-2xl' }) => {
+      if (!isOpen) return null;
+      return (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className={`relative w-full ${maxWidth} rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden`} onClick={e => e.stopPropagation()}>
+            <div className="flex items-start justify-between p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40">
+              <div>
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">{title}</h3>
+                {subtitle && <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{subtitle}</p>}
+              </div>
+              <button onClick={onClose} className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                <Icon name="x-circle" size={18} />
+              </button>
+            </div>
+            <div className="p-5 sm:p-6 max-h-[80vh] overflow-y-auto">{children}</div>
+          </div>
+        </div>
+      );
+    };
+
+    const Toast = ({ message, type = 'success', onClose }) => {
+      useEffect(() => {
+        if (!message) return;
+        const timer = setTimeout(() => onClose(), 3500);
+        return () => clearTimeout(timer);
+      }, [message]);
+      if (!message) return null;
+      const bg = type === 'warning' ? 'bg-amber-500' : type === 'info' ? 'bg-blue-600' : 'bg-emerald-600';
+      return (
+        <div className="fixed bottom-6 right-6 z-50 animate-bounce">
+          <div className={`flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl text-white text-xs font-semibold ${bg}`}>
+            <Icon name="check-circle" size={16} />
+            <span>{message}</span>
+            <button onClick={onClose} className="ml-2 opacity-80 hover:opacity-100">✕</button>
+          </div>
+        </div>
+      );
+    };
+
+    // --- 3. MOCK DATA STORE ---
+    const INITIAL_USERS = [
+      { id: 'trainee-01', name: 'Aarav Sharma', email: 'aarav.sharma@gov.in', role: 'Trainee', department: 'Dept. of Administrative Reforms', status: 'Active', xp: 3420, streak: 7, rank: 4, avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80', qualifications: 'Master of Public Policy (MPP)', experience: '6 years in Government Transformation', badges: ['badge-01', 'badge-02'] },
+      { id: 'trainee-02', name: 'Sunita Verma', email: 'sunita.v@nic.in', role: 'Trainee', department: 'National Informatics Centre (NIC)', status: 'Active', xp: 4850, streak: 14, rank: 1, avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=250&q=80', badges: ['badge-01', 'badge-02', 'badge-03', 'badge-04'] },
+      { id: 'trainee-03', name: 'Mohammad Zeeshan', email: 'm.zeeshan@meity.gov.in', role: 'Trainee', department: 'Ministry of Electronics & IT', status: 'Active', xp: 4120, streak: 11, rank: 2, avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=250&q=80', badges: ['badge-01', 'badge-02', 'badge-03'] },
+      { id: 'trainee-04', name: 'Priya Patel', email: 'priya.p@health.gov.in', role: 'Trainee', department: 'Ministry of Health', status: 'Active', xp: 3780, streak: 5, rank: 3, avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=250&q=80', badges: ['badge-01', 'badge-04'] },
+      { id: 'trainer-01', name: 'Dr. Ramesh Sundaram', email: 'dr.sundaram@nic.in', role: 'Trainer', department: 'National Informatics Centre - AI Division', title: 'Principal Data & AI Architect', rating: 4.92, studentsCount: 1420, coursesCount: 4, avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=250&q=80', qualifications: 'Ph.D. Computer Science (IIT Madras)', experience: '18+ years national e-governance systems', skills: ['Python', 'Data Governance', 'SQL', 'Big Data'] },
+      { id: 'trainer-02', name: 'Prof. Ananya Roy', email: 'ananya.roy@iitd.ac.in', role: 'Trainer', department: 'Centre for Public Policy', title: 'Data Ethics Fellow', rating: 4.88, studentsCount: 1180, coursesCount: 3, avatar: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=250&q=80', qualifications: 'D.Phil Public Policy (Oxford)', skills: ['Statistics', 'DPDP Act', 'Ethics'] },
+      { id: 'trainer-03', name: 'Vikramaditya Rao', email: 'v.rao@cert-in.gov.in', role: 'Trainer', department: 'National Cyber Security Coordination', title: 'Cloud Security Strategist', rating: 4.95, studentsCount: 960, coursesCount: 3, avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=250&q=80', skills: ['Zero Trust', 'CERT-In Directives', 'Threat Hunting'] },
+      { id: 'admin-01', name: 'Rajeshwari Iyer', email: 'director.cb@gov.in', role: 'Admin', department: 'Capacity Building Commission', title: 'Director of National Portal', avatar: 'https://images.unsplash.com/photo-1598550874175-4d0ef436c909?auto=format&fit=crop&w=250&q=80' },
+      { id: 'pending-01', name: 'Kunal Deshmukh', email: 'kunal.d@rural.gov.in', role: 'Trainee', department: 'Ministry of Rural Development', status: 'Pending', avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=250&q=80' },
+      { id: 'pending-02', name: 'Dr. Sneha Pillai', email: 'sneha.pillai@aiims.edu', role: 'Trainer', department: 'AIIMS Digital Health Unit', status: 'Pending', avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=250&q=80' }
+    ];
+
+    const INITIAL_BADGES = [
+      { id: 'badge-01', name: 'First Step', description: 'Enrolled in your first course', icon: 'check-badge', color: 'text-blue-500 bg-blue-100 dark:bg-blue-900/40 border-blue-200 dark:border-blue-800' },
+      { id: 'badge-02', name: 'On Fire', description: 'Maintained a 7-day learning streak', icon: 'flame', color: 'text-orange-500 bg-orange-100 dark:bg-orange-900/40 border-orange-200 dark:border-orange-800' },
+      { id: 'badge-03', name: 'Perfect Score', description: 'Scored 100% in an assessment', icon: 'star', color: 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900/40 border-yellow-200 dark:border-yellow-800' },
+      { id: 'badge-04', name: 'Data Wizard', description: 'Completed a Data Analytics course', icon: 'zap', color: 'text-purple-500 bg-purple-100 dark:bg-purple-900/40 border-purple-200 dark:border-purple-800' }
+    ];
+
+    const INITIAL_COMPETENCIES = [
+      { name: 'Python Programming', level: 82, target: 90 },
+      { name: 'Data Analysis & Visualization', level: 65, target: 85 },
+      { name: 'Statistical Inference & Modeling', level: 48, target: 80 }, // Gap
+      { name: 'Digital Governance & Public Policy', level: 88, target: 85 },
+      { name: 'Information Security & Cyber Hygiene', level: 62, target: 75 },
+      { name: 'Strategic Communication & Leadership', level: 75, target: 80 }
+    ];
+
+    const INITIAL_COURSES = [
+      { id: 'course-01', title: 'Python for Data-Driven Public Administration', trainerName: 'Dr. Ramesh Sundaram', category: 'Data Science & AI', difficulty: 'Intermediate', duration: '6 Weeks (24 Hours)', rating: 4.9, reviewsCount: 312, enrolledCount: 1420, certificateAvailable: true, featured: true, image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=600&q=80', description: 'Empower public officials to clean ministerial CSV datasets and generate automated reporting dashboards.' },
+      { id: 'course-02', title: 'Statistical Foundations & Public Sector Analytics', trainerName: 'Prof. Ananya Roy', category: 'Analytics & Statistics', difficulty: 'Beginner', duration: '4 Weeks (16 Hours)', rating: 4.8, reviewsCount: 245, enrolledCount: 980, certificateAvailable: true, featured: true, image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80', description: 'Master hypothesis testing, sampling bias detection, and regression to evaluate social scheme efficacy.' },
+      { id: 'course-03', title: 'Cybersecurity Governance & Digital Resilience', trainerName: 'Vikramaditya Rao', category: 'Cybersecurity', difficulty: 'Advanced', duration: '5 Weeks (20 Hours)', rating: 4.95, reviewsCount: 420, enrolledCount: 1650, certificateAvailable: true, featured: true, image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=600&q=80', description: 'Preparedness for cyber threats, critical infrastructure protection, CERT-In compliance, and zero trust.' },
+      { id: 'course-04', title: 'Strategic Public Leadership & Collaborative Governance', trainerName: 'Priya Nambiar', category: 'Leadership & Management', difficulty: 'Intermediate', duration: '4 Weeks (16 Hours)', rating: 4.85, reviewsCount: 189, enrolledCount: 820, certificateAvailable: true, featured: false, image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=600&q=80', description: 'Strengthen collaborative leadership, stakeholder mediation, and change management across ministries.' },
+      { id: 'course-05', title: 'National Data Governance & Open Data Frameworks', trainerName: 'Dr. Ramesh Sundaram', category: 'Digital Governance', difficulty: 'Beginner', duration: '3 Weeks (12 Hours)', rating: 4.89, reviewsCount: 204, enrolledCount: 1120, certificateAvailable: true, featured: false, image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80', description: 'Understand metadata standards, de-identification rules, and inter-departmental data sharing pipelines.' },
+      { id: 'course-06', title: 'Citizen-Centric UX & Digital Service Design', trainerName: 'Priya Nambiar', category: 'Digital Governance', difficulty: 'Beginner', duration: '4 Weeks (16 Hours)', rating: 4.87, reviewsCount: 220, enrolledCount: 890, certificateAvailable: true, featured: false, image: 'https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?auto=format&fit=crop&w=600&q=80', description: 'Design accessible public digital services following WCAG 2.1 accessibility and multilingual standards.' }
+    ];
+
+    const INITIAL_ASSESSMENTS = [
+      {
+        id: 'assess-01', courseId: 'course-02', courseName: 'Statistical Foundations', title: 'Statistical Inference & Sampling Bias Diagnostic Assessment', subject: 'Statistics & Sampling Theory', difficulty: 'Intermediate', timeLimitMinutes: 15, questionsCount: 4, deadline: '2026-10-15', status: 'Available',
+        questions: [
+          { id: 'q1', topic: 'Sampling Bias', question: 'A department surveys citizens exclusively via an online portal to evaluate rural transport satisfaction. What primary statistical flaw undermines this study?', options: ['Survivorship bias in response counts.', 'Selection bias (undercoverage) systematically excluding non-internet users.', 'Type I error in hypothesis acceptance.', 'Regression to the mean across harvest seasons.'], correctAnswer: 1, explanation: 'Online-only surveys in rural areas create severe undercoverage selection bias against non-smartphone users.' },
+          { id: 'q2', topic: 'Hypothesis Testing', question: 'An analyst tests whether a new direct welfare transfer portal reduces processing days. The resulting p-value is 0.018 against alpha = 0.05. What is the valid conclusion?', options: ['Reject the null hypothesis; statistically significant evidence of processing time reduction exists.', 'Accept the null hypothesis; no change occurred.', 'The sample size was too small to make any valid claim.', 'Confirm that 98.2% of future applications will finish on time.'], correctAnswer: 0, explanation: 'p-value (0.018) is lower than 0.05, so we reject the null hypothesis.' },
+          { id: 'q3', topic: 'Confounding Variables', question: 'A study shows higher hospital bed density correlates with higher mortality in 30 districts. Why is closing hospital beds irrational?', options: ['Mortality is non-normal distribution.', 'Confounding by indication: severely ill patients are referred to larger tertiary hospitals.', 'Sample variance was negative.', 'Regression requires 200 districts.'], correctAnswer: 1, explanation: 'Confounding by indication: critically ill patients are referred to tertiary hospitals with higher bed capacity.' },
+          { id: 'q4', topic: 'Statistical Power', question: 'If an evaluation has low statistical power (0.45) due to small sample size, what error risk is elevated?', options: ['Type II error: Failing to detect an actual beneficial policy effect.', 'Type I error: Claiming a failed policy succeeded.', 'Multicollinearity among features.', 'Excessive standard deviation.'], correctAnswer: 0, explanation: 'Power = 1 - Beta. Low power means high Beta (55% chance of Type II error).' }
+        ]
+      }
+    ];
+
+    const INITIAL_CERTIFICATES = [
+      { id: 'cert-01', certificateNumber: 'CC-2026-1042', traineeId: 'trainee-01', traineeName: 'Aarav Sharma', courseName: 'Strategic Public Leadership & Collaborative Governance', issueDate: '2026-02-14', trainerName: 'Priya Nambiar', organization: 'Capacity Building Commission', grade: 'Distinction (94%)', status: 'VALID' },
+      { id: 'cert-02', certificateNumber: 'CC-2026-0891', traineeId: 'trainee-01', traineeName: 'Aarav Sharma', courseName: 'Citizen-Centric UX & Digital Service Design', issueDate: '2026-01-28', trainerName: 'Priya Nambiar', organization: 'Digital India Academy', grade: 'First Class (89%)', status: 'VALID' }
+    ];
+
+    const INITIAL_FEEDBACKS = [
+      { id: 'fb-01', traineeName: 'Aarav Sharma', department: 'Administrative Reforms', courseTitle: 'Python for Public Admin', trainerName: 'Dr. Ramesh Sundaram', rating: 5, date: '2026-03-15', sentiment: 'Positive', topic: 'Content Quality', comment: 'Superb breakdown of practical data wrangling. The ministerial CSV templates made immediate sense for daily tasks.' },
+      { id: 'fb-02', traineeName: 'Sunita Verma', department: 'NIC', courseTitle: 'Python for Public Admin', trainerName: 'Dr. Ramesh Sundaram', rating: 4, date: '2026-03-12', sentiment: 'Neutral', topic: 'Course Pacing', comment: 'Very informative course content, but the vectorization module in week 3 moved slightly too fast for beginners.' },
+      { id: 'fb-03', traineeName: 'Rohit Kulkarni', department: 'Economic Affairs', courseTitle: 'Python for Public Admin', trainerName: 'Dr. Ramesh Sundaram', rating: 3, date: '2026-03-08', sentiment: 'Negative', topic: 'Audio Quality', comment: 'The trainer explanation is top notch, but the audio quality in recorded lecture #3 had persistent background echo.' }
+    ];
+
+    const INITIAL_ANNOUNCEMENTS = [
+      { id: 'ann-01', title: 'Launch of National AI in Public Policy Certification Track', category: 'New Learning Content', date: '2026-09-28', author: 'Rajeshwari Iyer, Director', published: true, description: 'Capacity Connect introduces a cutting-edge 4-module specialization on Algorithmic Accountability and DPDP compliance.' },
+      { id: 'ann-02', title: 'Mandatory Cyber Hygiene & CERT-In Compliance Training for Q4', category: 'Notification', date: '2026-09-25', author: 'Rajeshwari Iyer, Director', published: true, description: 'All officers managing departmental portals are requested to complete the Cyber Resilience assessment by Nov 15.' },
+      { id: 'ann-03', title: 'Milestone Achieved: 8,500+ Verified Digital Certificates Issued', category: 'Achievement', date: '2026-09-20', author: 'Capacity Building Commission', published: true, description: 'Over 8,500 officials across 42 ministries have received verifiable credentials on Capacity Connect.' }
+    ];
+
+    // --- 4. MAIN APP COMPONENT ---
+    function App() {
+      const [currentRole, setCurrentRole] = useState('Trainee');
+      const [activeView, setActiveView] = useState('login');
+      const [darkMode, setDarkMode] = useState(false);
+      const [currentUser, setCurrentUser] = useState(INITIAL_USERS[0]);
+      const [users, setUsers] = useState(INITIAL_USERS);
+      const [badges, setBadges] = useState(INITIAL_BADGES);
+      const [courses, setCourses] = useState(INITIAL_COURSES);
+      const [assessments, setAssessments] = useState(INITIAL_ASSESSMENTS);
+      const [certificates, setCertificates] = useState(INITIAL_CERTIFICATES);
+      const [feedbacks, setFeedbacks] = useState(INITIAL_FEEDBACKS);
+      const [announcements, setAnnouncements] = useState(INITIAL_ANNOUNCEMENTS);
+      const [competencies, setCompetencies] = useState(INITIAL_COMPETENCIES);
+      const [enrolledCourseIds, setEnrolledCourseIds] = useState(['course-01', 'course-03']);
+
+      // Modals
+      const [selectedCourse, setSelectedCourse] = useState(null);
+      const [selectedCert, setSelectedCert] = useState(null);
+      const [activeAssessment, setActiveAssessment] = useState(null);
+      const [showVerifyModal, setShowVerifyModal] = useState(false);
+      const [authModalOpen, setAuthModalOpen] = useState(false);
+      const [toast, setToast] = useState({ message: '', type: 'success' });
+
+      // AI Assessment Generator state
+      const [aiTopic, setAiTopic] = useState('Data Governance & DPDP Act');
+      const [aiDifficulty, setAiDifficulty] = useState('Intermediate');
+      const [aiGenerating, setAiGenerating] = useState(false);
+      const [aiGeneratedQuestions, setAiGeneratedQuestions] = useState([]);
+
+      // AI Skill Gap state
+      const [analyzingSkills, setAnalyzingSkills] = useState(false);
+      const [showSkillResults, setShowSkillResults] = useState(true);
+
+      // New Skill state
+      const [newSkillName, setNewSkillName] = useState('');
+      const [newSkillLevel, setNewSkillLevel] = useState(70);
+      const [showAddSkillModal, setShowAddSkillModal] = useState(false);
+
+      const showToast = (message, type = 'success') => setToast({ message, type });
+
+      // Switch persona
+      const handleSwitchRole = (role) => {
+        setCurrentRole(role);
+        if (role === 'Trainer') {
+          setCurrentUser(INITIAL_USERS.find(u => u.role === 'Trainer'));
+          setActiveView('trainer-dashboard');
+        } else if (role === 'Admin') {
+          setCurrentUser(INITIAL_USERS.find(u => u.role === 'Admin'));
+          setActiveView('admin-dashboard');
+        } else {
+          setCurrentUser(INITIAL_USERS[0]);
+          setActiveView('trainee-dashboard');
+        }
+        showToast(`Switched persona to ${role}`);
+      };
+
+      const handleEnroll = (course) => {
+        if (enrolledCourseIds.includes(course.id)) {
+          showToast(`Already enrolled in "${course.title}"`, 'info');
+          return;
+        }
+        setEnrolledCourseIds([...enrolledCourseIds, course.id]);
+        
+        // Update user XP
+        const updatedUsers = users.map(u => 
+          u.id === currentUser.id 
+            ? { ...u, xp: (u.xp || 0) + 50 } 
+            : u
+        );
+        setUsers(updatedUsers);
+        setCurrentUser(updatedUsers.find(u => u.id === currentUser.id));
+        
+        showToast(`Enrolled in "${course.title}" (+50 XP)!`);
+      };
+
+      const handleAddSkill = (e) => {
+        e.preventDefault();
+        if (!newSkillName.trim()) return;
+        setCompetencies([...competencies, { name: newSkillName.trim(), level: Number(newSkillLevel), target: 85 }]);
+        setNewSkillName('');
+        setShowAddSkillModal(false);
+        showToast('New skill added to Competency Passport!');
+      };
+
+      const handleGenerateAiMcqs = () => {
+        setAiGenerating(true);
+        setTimeout(() => {
+          setAiGenerating(false);
+          setAiGeneratedQuestions([
+            {
+              question: `Under the statutory DPDP Act for ${aiTopic}, what is the mandatory requirement regarding Purpose Limitation?`,
+              options: ['Data may be repurposed without notice if approved internally.', 'Data collected for a specific purpose cannot be processed for incompatible secondary purposes without lawful authorization.', 'Data must be purged within 24 hours regardless of records acts.', 'All records must be made public open-data.'],
+              correctAnswer: 1,
+              explanation: 'Purpose limitation mandates that personal data collected for a specified purpose cannot be repurposed without clear authority or consent.'
+            },
+            {
+              question: `In municipal data anonymization, which technique ensures an individual cannot be re-identified with probability greater than 1/k?`,
+              options: ['Base64 hashing of phone numbers.', 'k-Anonymity (quasi-identifiers grouped into clusters of at least k).', 'Using solid-state drives.', 'Alphabetical sorting of names.'],
+              correctAnswer: 1,
+              explanation: 'k-Anonymity ensures each record is indistinguishable from at least k-1 other records regarding quasi-identifiers.'
+            }
+          ]);
+          showToast('AI MCQs Generated!');
+        }, 1500);
+      };
+
+      const handlePublishAiTest = () => {
+        const newA = {
+          id: `assess-${Date.now()}`,
+          courseId: 'course-01',
+          courseName: 'Custom AI Generated Module',
+          title: `${aiTopic} AI Assessment`,
+          subject: aiTopic,
+          difficulty: aiDifficulty,
+          timeLimitMinutes: 10,
+          questionsCount: aiGeneratedQuestions.length,
+          deadline: '2026-11-20',
+          status: 'Available',
+          questions: aiGeneratedQuestions
+        };
+        setAssessments([newA, ...assessments]);
+        setAiGeneratedQuestions([]);
+        showToast(`"${aiTopic}" published to Trainee Catalog!`);
+      };
+
+      const handleAnalyzeSkills = () => {
+        setAnalyzingSkills(true);
+        setShowSkillResults(false);
+        setTimeout(() => {
+          setAnalyzingSkills(false);
+          setShowSkillResults(true);
+          showToast('AI Skill Gap Diagnostic Complete!');
+        }, 1200);
+      };
+
+      return (
+        <div className={`min-h-screen ${darkMode ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-800'}`}>
+          {/* Top Navbar */}
+          <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur">
+            <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+              <div onClick={() => setActiveView('landing')} className="flex items-center gap-2.5 cursor-pointer">
+                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-600 to-cyan-600 flex items-center justify-center text-white shadow-md">
+                  <Icon name="graduation-cap" size={20} />
+                </div>
+                <div>
+                  <span className="font-bold text-lg tracking-tight text-slate-900 dark:text-white">
+                    Capacity<span className="text-emerald-600 dark:text-emerald-400">Connect</span>
+                  </span>
+                  <p className="text-[10px] text-slate-400 hidden sm:block">Digital Capacity Building Portal</p>
+                </div>
+              </div>
+
+              {/* 1-Click Demo Persona Switcher */}
+              {activeView !== 'login' && (
+                <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <span className="text-xs font-semibold px-2 text-slate-400 hidden sm:inline">Role:</span>
+                  {['Trainee', 'Trainer', 'Admin'].map(r => (
+                    <button
+                      key={r}
+                      onClick={() => handleSwitchRole(r)}
+                      className={`text-xs font-semibold px-3 py-1 rounded-lg transition-all ${
+                        currentRole === r ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+                      }`}
+                    >
+                      {r}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex items-center gap-3">
+                <button onClick={() => setDarkMode(!darkMode)} className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">
+                  <Icon name={darkMode ? 'sun' : 'moon'} size={18} className={darkMode ? 'text-amber-400' : ''} />
+                </button>
+                {activeView !== 'login' && (
+                  <button onClick={() => setActiveView('login')} className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+                    Logout
+                  </button>
+                )}
+              </div>
+            </div>
+          </header>
+
+          <div className="flex">
+            {/* Sidebar (When in dashboard mode) */}
+            {activeView !== 'landing' && activeView !== 'login' && (
+              <aside className="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 space-y-1 shrink-0 hidden md:block min-h-[calc(100vh-4rem)]">
+                <div className="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 mb-4 text-xs font-bold text-slate-600 dark:text-slate-300 uppercase">
+                  {currentRole} Workspace
+                </div>
+
+                {currentRole === 'Trainee' && (
+                  <>
+                    <button onClick={() => setActiveView('trainee-dashboard')} className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl ${activeView === 'trainee-dashboard' ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400'}`}>
+                      <Icon name="grid" size={16} /> Dashboard
+                    </button>
+                    <button onClick={() => setActiveView('trainee-profile')} className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl ${activeView === 'trainee-profile' ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400'}`}>
+                      <Icon name="user" size={16} /> Competency Passport
+                    </button>
+                    <button onClick={() => setActiveView('courses')} className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl ${activeView === 'courses' ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400'}`}>
+                      <Icon name="book-open" size={16} /> Course Catalog
+                    </button>
+                    <button onClick={() => setActiveView('skill-gap')} className={`w-full flex items-center justify-between px-3 py-2 text-xs font-semibold rounded-xl ${activeView === 'skill-gap' ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400'}`}>
+                      <span className="flex items-center gap-2.5"><Icon name="sparkles" size={16} /> AI Skill Gap Analyzer</span>
+                      <span className="text-[9px] bg-gradient-to-r from-emerald-500 to-cyan-500 text-white px-1.5 py-0.2 rounded-full font-bold">AI</span>
+                    </button>
+                    <button onClick={() => setActiveView('assessments')} className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl ${activeView === 'assessments' ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400'}`}>
+                      <Icon name="file-text" size={16} /> MCQ Assessments
+                    </button>
+                    <button onClick={() => setActiveView('certificates')} className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl ${activeView === 'certificates' ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400'}`}>
+                      <Icon name="check-badge" size={16} /> Verified Certificates
+                    </button>
+                    <button onClick={() => setActiveView('achievements')} className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl ${activeView === 'achievements' ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400'}`}>
+                      <Icon name="award" size={16} /> Achievements & Badges
+                    </button>
+                    <button onClick={() => setActiveView('leaderboard')} className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl ${activeView === 'leaderboard' ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400'}`}>
+                      <Icon name="trending-up" size={16} /> Leaderboard
+                    </button>
+                  </>
+                )}
+
+                {currentRole === 'Trainer' && (
+                  <>
+                    <button onClick={() => setActiveView('trainer-dashboard')} className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl ${activeView === 'trainer-dashboard' ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400'}`}>
+                      <Icon name="grid" size={16} /> Dashboard
+                    </button>
+                    <button onClick={() => setActiveView('ai-generator')} className={`w-full flex items-center justify-between px-3 py-2 text-xs font-semibold rounded-xl ${activeView === 'ai-generator' ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400'}`}>
+                      <span className="flex items-center gap-2.5"><Icon name="sparkles" size={16} /> AI Assessment Gen</span>
+                      <span className="text-[9px] bg-gradient-to-r from-emerald-500 to-cyan-500 text-white px-1.5 py-0.2 rounded-full font-bold">AI</span>
+                    </button>
+                    <button onClick={() => setActiveView('courses')} className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl ${activeView === 'courses' ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400'}`}>
+                      <Icon name="book-open" size={16} /> My Courses
+                    </button>
+                    <button onClick={() => setActiveView('feedback-insights')} className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl ${activeView === 'feedback-insights' ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400'}`}>
+                      <Icon name="pie-chart" size={16} /> Feedback Insights
+                    </button>
+                  </>
+                )}
+
+                {currentRole === 'Admin' && (
+                  <>
+                    <button onClick={() => setActiveView('admin-dashboard')} className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl ${activeView === 'admin-dashboard' ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400'}`}>
+                      <Icon name="grid" size={16} /> Dashboard
+                    </button>
+                    <button onClick={() => setActiveView('admin-users')} className={`w-full flex items-center justify-between px-3 py-2 text-xs font-semibold rounded-xl ${activeView === 'admin-users' ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400'}`}>
+                      <span className="flex items-center gap-2.5"><Icon name="user-check" size={16} /> User Approvals</span>
+                      <span className="text-[10px] bg-amber-500 text-white px-1.5 py-0.2 rounded-full font-bold">{users.filter(u => u.status === 'Pending').length}</span>
+                    </button>
+                    <button onClick={() => setActiveView('feedback-insights')} className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl ${activeView === 'feedback-insights' ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400'}`}>
+                      <Icon name="pie-chart" size={16} /> Feedback Sentiment
+                    </button>
+                    <button onClick={() => setActiveView('announcements')} className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl ${activeView === 'announcements' ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400'}`}>
+                      <Icon name="bell" size={16} /> Announcements
+                    </button>
+                  </>
+                )}
+              </aside>
+            )}
+
+            {/* Main Content Pane */}
+            <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+              {/* LOGIN PAGE */}
+              {activeView === 'login' && (
+                <div className="flex items-center justify-center min-h-[calc(100vh-12rem)]">
+                  <div className="w-full max-w-md p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-cyan-500"></div>
+                    <div className="text-center mb-8">
+                      <div className="h-16 w-16 mx-auto rounded-2xl bg-gradient-to-br from-emerald-600 to-cyan-600 flex items-center justify-center text-white shadow-lg mb-4">
+                        <Icon name="graduation-cap" size={32} />
+                      </div>
+                      <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Capacity<span className="text-emerald-600 dark:text-emerald-400">Connect</span></h2>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">National Digital Capacity Building Portal</p>
+                    </div>
+
+                    <form onSubmit={(e) => { e.preventDefault(); setActiveView('landing'); }} className="space-y-4">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Gov.in Email / NIC ID</label>
+                        <div className="relative">
+                          <Icon name="user" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                          <input type="email" placeholder="e.g. aarav.sharma@gov.in" required className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:text-white transition-all" />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Password</label>
+                        <div className="relative">
+                          <Icon name="shield" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                          <input type="password" placeholder="••••••••" required className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:text-white transition-all" />
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center text-xs">
+                        <label className="flex items-center gap-2 text-slate-600 dark:text-slate-400 cursor-pointer">
+                          <input type="checkbox" className="rounded text-emerald-600 focus:ring-emerald-500" />
+                          Remember me
+                        </label>
+                        <a href="#" className="text-emerald-600 font-bold hover:underline">Forgot password?</a>
+                      </div>
+                      <button type="submit" className="w-full py-3.5 mt-2 rounded-xl bg-gradient-to-r from-emerald-600 to-cyan-600 text-white font-bold text-sm shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 transition-all flex items-center justify-center gap-2">
+                        Secure Sign In <Icon name="chevron-right" size={16} />
+                      </button>
+                    </form>
+
+                    <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 text-center">
+                      <p className="text-xs text-slate-500">Secure SSO enabled for all Government Ministries and Departments.</p>
+                      <div className="mt-3 flex justify-center gap-2">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span className="text-[10px] font-mono font-bold text-emerald-600 uppercase tracking-wider">System Online • Zero Trust</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* LANDING PAGE */}
+              {activeView === 'landing' && (
+                <div className="space-y-12">
+                  <div className="text-center py-12 px-4 max-w-3xl mx-auto space-y-4">
+                    <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 dark:bg-emerald-950 px-3 py-1 rounded-full border border-emerald-200">
+                      National Digital Capacity Building Framework
+                    </span>
+                    <h1 className="text-4xl sm:text-5xl font-black text-slate-900 dark:text-white leading-tight">
+                      Build Skills. Strengthen Competencies. <span className="text-emerald-600 dark:text-emerald-400">Grow Together.</span>
+                    </h1>
+                    <p className="text-sm text-slate-600 dark:text-slate-300">
+                      Capacity Connect enables organizations to train, assess, identify skill gaps, connect trainees with suitable trainers, and track competency development.
+                    </p>
+                    <div className="flex justify-center gap-3 pt-2">
+                      <button onClick={() => setActiveView('courses')} className="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-lg">
+                        Explore Courses
+                      </button>
+                      <button onClick={() => handleSwitchRole('Trainee')} className="px-6 py-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-bold text-xs">
+                        Enter Trainee Portal
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* 4 Stats */}
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-center">
+                    <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+                      <div className="text-3xl font-black text-slate-900 dark:text-white">2,500+</div>
+                      <p className="text-xs text-slate-400 mt-1">Active Trainees</p>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+                      <div className="text-3xl font-black text-blue-600">180+</div>
+                      <p className="text-xs text-slate-400 mt-1">Certified Trainers</p>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+                      <div className="text-3xl font-black text-cyan-600">120+</div>
+                      <p className="text-xs text-slate-400 mt-1">Curated Courses</p>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+                      <div className="text-3xl font-black text-emerald-600">8,500+</div>
+                      <p className="text-xs text-slate-400 mt-1">QR Certificates Issued</p>
+                    </div>
+                  </div>
+
+                  {/* Featured Courses */}
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Featured National Curriculums</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {courses.slice(0, 3).map(c => (
+                        <div key={c.id} onClick={() => setSelectedCourse(c)} className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-hidden cursor-pointer hover:border-emerald-500 transition-all flex flex-col justify-between">
+                          <img src={c.image} alt={c.title} className="h-40 w-full object-cover" />
+                          <div className="p-5 flex-1 flex flex-col justify-between">
+                            <div>
+                              <span className="text-[10px] font-bold text-emerald-600 uppercase">{c.category}</span>
+                              <h3 className="font-bold text-sm text-slate-900 dark:text-white mt-1">{c.title}</h3>
+                              <p className="text-xs text-slate-500 mt-1">{c.description}</p>
+                            </div>
+                            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between text-xs text-slate-500">
+                              <span>★ {c.rating}</span>
+                              <span className="text-emerald-600 font-semibold">View Course →</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TRAINEE DASHBOARD */}
+              {activeView === 'trainee-dashboard' && (
+                <div className="space-y-6">
+                  <div className="p-6 rounded-3xl bg-slate-900 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                      <span className="text-xs font-bold text-emerald-400 uppercase">Trainee Portal</span>
+                      <h1 className="text-2xl font-black mt-1">Welcome back, {currentUser.name}</h1>
+                      <p className="text-xs text-slate-300 mt-0.5">{currentUser.department}</p>
+                      <div className="mt-3 flex gap-3 text-xs">
+                        <span className="bg-white/10 px-3 py-1 rounded-xl">🔥 {currentUser.streak || 7} Day Streak</span>
+                        <span className="bg-white/10 px-3 py-1 rounded-xl">⚡ {currentUser.xp || 3420} XP</span>
+                        <span className="bg-white/10 px-3 py-1 rounded-xl">🏆 Rank #4 National</span>
+                      </div>
+                    </div>
+                    <button onClick={() => setActiveView('skill-gap')} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 font-bold text-xs text-white shadow">
+                      Run AI Skill Gap Diagnostic
+                    </button>
+                  </div>
+
+                  {/* Competency Overview Progress Bars (Exact Prompt Requirement) */}
+                  <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                    <div className="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
+                      <div>
+                        <h2 className="font-bold text-base text-slate-900 dark:text-white">Competency Overview Index</h2>
+                        <p className="text-xs text-slate-400">Current verified proficiency levels</p>
+                      </div>
+                      <button onClick={() => setShowAddSkillModal(true)} className="text-xs font-bold text-emerald-600 hover:underline">+ Add Skill</button>
+                    </div>
+
+                    <div className="space-y-3">
+                      {competencies.map(comp => (
+                        <div key={comp.name} className="space-y-1 text-xs">
+                          <div className="flex justify-between font-semibold">
+                            <span className="text-slate-700 dark:text-slate-300">{comp.name}</span>
+                            <span className={`font-mono font-bold ${comp.level < 50 ? 'text-amber-500' : 'text-emerald-600'}`}>{comp.level}%</span>
+                          </div>
+                          <div className="h-2 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                            <div className={`h-full rounded-full ${comp.level >= 80 ? 'bg-emerald-500' : comp.level >= 60 ? 'bg-blue-500' : 'bg-amber-500'}`} style={{ width: `${comp.level}%` }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2">
+                      <Icon name="alert-circle" size={16} className="shrink-0 mt-0.5" />
+                      <div><strong>Skill Gap Detected:</strong> Statistics (48%) is below target requirement (80%). Run the AI diagnostic to enroll in bridge modules.</div>
+                    </div>
+                  </div>
+
+                  {/* Gamification Hub */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                      <div>
+                        <div className="flex justify-between items-center mb-3">
+                          <h2 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2"><Icon name="flame" className="text-orange-500" size={18} /> Learning Streak</h2>
+                          <span className="text-xs font-bold bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-400 px-2 py-1 rounded-lg">Level {currentUser.level || 12}</span>
+                        </div>
+                        <p className="text-xs text-slate-500">You are on a {currentUser.streak || 7} day streak! Complete a module today to keep it alive.</p>
+                      </div>
+                      <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between gap-1 text-center text-[10px] font-bold">
+                        {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, i) => (
+                          <div key={i} className={`flex flex-col items-center gap-1 ${i < (currentUser.streak || 7) ? 'text-orange-500' : 'text-slate-300 dark:text-slate-700'}`}>
+                            <div className={`h-8 w-8 rounded-full flex items-center justify-center ${i < (currentUser.streak || 7) ? 'bg-orange-100 dark:bg-orange-950/50 border border-orange-200 dark:border-orange-800' : 'bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700'}`}>
+                              {i < (currentUser.streak || 7) ? <Icon name="flame" size={14} /> : '•'}
+                            </div>
+                            {day}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+                      <div className="flex justify-between items-center mb-3">
+                        <h2 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2"><Icon name="award" className="text-blue-500" size={18} /> Recent Badges</h2>
+                        <button onClick={() => setActiveView('achievements')} className="text-[10px] font-bold text-emerald-600 hover:underline">View All →</button>
+                      </div>
+                      <div className="space-y-2">
+                        {badges.slice(0, 2).map(b => (
+                          <div key={b.id} className="flex items-center gap-3 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
+                            <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${b.color}`}>
+                              <Icon name={b.icon} size={18} />
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="text-xs font-bold text-slate-900 dark:text-white">{b.name}</h4>
+                              <p className="text-[10px] text-slate-500">{b.description}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* COMPETENCY PASSPORT */}
+              {activeView === 'trainee-profile' && (
+                <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+                  <div className="flex justify-between items-center pb-4 border-b border-slate-100 dark:border-slate-800">
+                    <div>
+                      <h1 className="text-xl font-black text-slate-900 dark:text-white">Civil Service Competency Passport</h1>
+                      <p className="text-xs text-slate-400">ID: CC-PASSPORT-2026 • Verified Credential</p>
+                    </div>
+                    <button onClick={() => setShowAddSkillModal(true)} className="px-4 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs">+ Add Verified Skill</button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 space-y-3">
+                      <h3 className="font-bold text-xs text-slate-700 dark:text-slate-300 uppercase">Verified Competencies</h3>
+                      {competencies.map(s => (
+                        <div key={s.name} className="flex justify-between text-xs">
+                          <span>{s.name}</span>
+                          <span className="font-mono font-bold text-emerald-600">{s.level}%</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 space-y-3">
+                      <h3 className="font-bold text-xs text-slate-700 dark:text-slate-300 uppercase">Completed Curriculums</h3>
+                      <div className="p-2.5 rounded-lg bg-white dark:bg-slate-700 text-xs">
+                        <div className="font-bold">Citizen-Centric UX Design</div>
+                        <p className="text-[10px] text-slate-400">Accredited Dec 2025</p>
+                      </div>
+                      <div className="p-2.5 rounded-lg bg-white dark:bg-slate-700 text-xs">
+                        <div className="font-bold">Public Leadership Strategies</div>
+                        <p className="text-[10px] text-slate-400">Accredited Feb 2026</p>
+                      </div>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 space-y-3">
+                      <h3 className="font-bold text-xs text-slate-700 dark:text-slate-300 uppercase">Issued QR Credentials</h3>
+                      {certificates.map(cert => (
+                        <div key={cert.id} onClick={() => setSelectedCert(cert)} className="p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-800 text-xs cursor-pointer hover:border-emerald-500">
+                          <div className="flex justify-between font-bold text-slate-900 dark:text-white">
+                            <span>{cert.certificateNumber}</span>
+                            <span className="text-[9px] bg-emerald-500 text-white px-1.5 py-0.2 rounded">VALID</span>
+                          </div>
+                          <p className="text-[10px] text-slate-500 truncate mt-0.5">{cert.courseName}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* COURSE CATALOG */}
+              {activeView === 'courses' && (
+                <div className="space-y-6">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h1 className="text-2xl font-black text-slate-900 dark:text-white">National Course Catalog</h1>
+                      <p className="text-xs text-slate-400">120+ specialized modules for public administration</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {courses.map(c => {
+                      const isEnrolled = enrolledCourseIds.includes(c.id);
+                      return (
+                        <div key={c.id} onClick={() => setSelectedCourse(c)} className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-hidden cursor-pointer hover:border-emerald-500 transition-all flex flex-col justify-between shadow-sm">
+                          <img src={c.image} alt={c.title} className="h-44 w-full object-cover" />
+                          <div className="p-5 flex-1 flex flex-col justify-between">
+                            <div>
+                              <div className="flex justify-between text-[10px] font-bold text-emerald-600 uppercase mb-1">
+                                <span>{c.category}</span>
+                                <span className="text-slate-400">{c.difficulty}</span>
+                              </div>
+                              <h3 className="font-bold text-sm text-slate-900 dark:text-white">{c.title}</h3>
+                              <p className="text-xs text-slate-500 mt-1 line-clamp-2">{c.description}</p>
+                            </div>
+
+                            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs">
+                              <span className="font-medium text-slate-600 dark:text-slate-400">Trainer: {c.trainerName.split(' ')[1]}</span>
+                              <span className={`font-bold ${isEnrolled ? 'text-blue-600' : 'text-emerald-600'}`}>
+                                {isEnrolled ? 'Enrolled ✓' : 'View & Enroll →'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* AI SKILL GAP ANALYZER (Flagship Feature) */}
+              {activeView === 'skill-gap' && (
+                <div className="space-y-6">
+                  <div className="p-6 rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                      <span className="text-xs font-bold text-emerald-400 uppercase">AI Diagnostic Suite</span>
+                      <h1 className="text-2xl font-black mt-0.5">AI Skill Gap Analyzer</h1>
+                      <p className="text-xs text-slate-300">Target Role: Principal Data Strategist & Policy Lead</p>
+                    </div>
+                    <button onClick={handleAnalyzeSkills} disabled={aiGenerating} className="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 font-bold text-xs shadow-lg">
+                      {analyzingSkills ? 'Scanning Competencies...' : 'Analyze My Skills'}
+                    </button>
+                  </div>
+
+                  {/* 4-Stage Visual Pipeline (Exact Prompt Requirement) */}
+                  <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">AI Diagnostic Pipeline Flow</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border text-xs">
+                        <span className="text-[10px] font-bold text-slate-400">STAGE 1</span>
+                        <h4 className="font-bold text-slate-900 dark:text-white mt-1">Current Competency</h4>
+                        <p className="text-slate-500 mt-1">Python 82% • Stats 48% • Gov 88%</p>
+                      </div>
+                      <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border text-xs">
+                        <span className="text-[10px] font-bold text-purple-500">STAGE 2</span>
+                        <h4 className="font-bold text-slate-900 dark:text-white mt-1">Assessment Performance</h4>
+                        <p className="text-slate-500 mt-1">Sampling Bias Quiz: 42% score</p>
+                      </div>
+                      <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 text-xs">
+                        <span className="text-[10px] font-bold text-amber-700">STAGE 3</span>
+                        <h4 className="font-bold text-amber-900 dark:text-amber-200 mt-1">Skill Gap Detection</h4>
+                        <p className="text-amber-800 mt-1 font-semibold">Statistics — Beginner (Critical Gap)</p>
+                      </div>
+                      <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 text-xs">
+                        <span className="text-[10px] font-bold text-emerald-700">STAGE 4</span>
+                        <h4 className="font-bold text-emerald-900 dark:text-emerald-200 mt-1">Recommended Learning</h4>
+                        <p className="text-emerald-800 mt-1 font-semibold">2 Upskilling Pathways</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Recommendation Action Card */}
+                  <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                    <h3 className="font-bold text-base text-slate-900 dark:text-white">Prescribed Upskilling Interventions</h3>
+                    <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                      <div>
+                        <span className="text-[10px] font-bold text-emerald-600 uppercase">Recommended Course #1</span>
+                        <h4 className="font-bold text-sm text-slate-900 dark:text-white">Statistical Foundations & Public Sector Analytics</h4>
+                        <p className="text-xs text-slate-500">Trainer: Prof. Ananya Roy • Bridges Hypothesis Testing & Sampling Bias gap.</p>
+                      </div>
+                      <button onClick={() => handleEnroll(courses[1])} className="px-4 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow">
+                        Enroll & Bridge Gap
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* MCQ ASSESSMENTS */}
+              {activeView === 'assessments' && (
+                <div className="space-y-6">
+                  <div>
+                    <h1 className="text-2xl font-black text-slate-900 dark:text-white">Subject-Wise MCQ Assessments</h1>
+                    <p className="text-xs text-slate-400">Timed evaluations with instant scoring and explanations</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {assessments.map(a => (
+                      <div key={a.id} className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                        <div>
+                          <div className="flex justify-between text-xs font-bold text-emerald-600 mb-1">
+                            <span>{a.subject}</span>
+                            <span className="text-slate-400 font-mono">{a.timeLimitMinutes} Mins</span>
+                          </div>
+                          <h3 className="font-bold text-base text-slate-900 dark:text-white">{a.title}</h3>
+                          <p className="text-xs text-slate-500 mt-1">Course: {a.courseName} • {a.questionsCount} Questions</p>
+                        </div>
+                        <div className="mt-6 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                          <span className="text-xs text-slate-400">Due: {a.deadline}</span>
+                          <button onClick={() => setActiveAssessment(a)} className="px-4 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow">
+                            Launch Assessment
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* CERTIFICATES */}
+              {activeView === 'certificates' && (
+                <div className="space-y-6">
+                  <div>
+                    <h1 className="text-2xl font-black text-slate-900 dark:text-white">Verified Digital Certificates</h1>
+                    <p className="text-xs text-slate-400">Accredited credentials with live QR code verification</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {certificates.map(cert => (
+                      <div key={cert.id} onClick={() => setSelectedCert(cert)} className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 cursor-pointer hover:border-emerald-500 shadow-sm flex flex-col justify-between">
+                        <div>
+                          <div className="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                            <span className="font-mono">{cert.certificateNumber}</span>
+                            <span className="text-[10px] bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 px-2 py-0.5 rounded-full font-bold">QR VALID</span>
+                          </div>
+                          <h3 className="font-bold text-base text-slate-900 dark:text-white mt-1">{cert.courseName}</h3>
+                          <p className="text-xs text-slate-500 mt-1">Issued to: {cert.traineeName} • {cert.grade}</p>
+                        </div>
+                        <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between text-xs">
+                          <span className="text-slate-400">{cert.issueDate}</span>
+                          <span className="text-emerald-600 font-bold">Inspect & Verify Online →</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ACHIEVEMENTS & BADGES */}
+              {activeView === 'achievements' && (
+                <div className="space-y-6">
+                  <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+                    <div>
+                      <h1 className="text-2xl font-black text-slate-900 dark:text-white">Achievements & Badges</h1>
+                      <p className="text-xs text-slate-400">Unlock special badges by reaching learning milestones</p>
+                    </div>
+                    <div className="px-4 py-2 rounded-xl bg-slate-900 text-white flex items-center gap-3 shadow-lg">
+                      <div className="h-10 w-10 rounded-full bg-gradient-to-br from-orange-400 to-rose-500 flex items-center justify-center">
+                        <Icon name="flame" size={20} className="text-white" />
+                      </div>
+                      <div>
+                        <div className="text-[10px] text-slate-300 font-bold uppercase">Current Streak</div>
+                        <div className="text-sm font-black">{currentUser.streak || 7} Days</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    {badges.map(b => {
+                      const isEarned = (currentUser.badges || []).includes(b.id);
+                      return (
+                        <div key={b.id} className={`relative p-5 rounded-2xl border ${isEarned ? 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 shadow-sm' : 'bg-slate-50 dark:bg-slate-800/30 border-slate-100 dark:border-slate-800 opacity-60 grayscale'}`}>
+                          {isEarned && (
+                            <div className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-emerald-500 text-white flex items-center justify-center border-2 border-white dark:border-slate-900">
+                              <Icon name="check" size={12} />
+                            </div>
+                          )}
+                          <div className={`h-14 w-14 rounded-2xl flex items-center justify-center mb-3 shadow-inner ${isEarned ? b.color : 'bg-slate-200 dark:bg-slate-700 text-slate-400'}`}>
+                            <Icon name={b.icon} size={24} />
+                          </div>
+                          <h3 className="font-bold text-sm text-slate-900 dark:text-white">{b.name}</h3>
+                          <p className="text-xs text-slate-500 mt-1">{b.description}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* LEADERBOARD */}
+              {activeView === 'leaderboard' && (
+                <div className="space-y-6">
+                  <div>
+                    <h1 className="text-2xl font-black text-slate-900 dark:text-white">National Learning Leaderboard & Honors</h1>
+                    <p className="text-xs text-slate-400">Compete with peers, earn XP, and climb the ranks!</p>
+                  </div>
+                  
+                  {/* Top 3 Podium */}
+                  <div className="flex justify-center items-end gap-2 sm:gap-4 mt-8 mb-10 h-48">
+                    {/* Rank 2 */}
+                    {users.filter(u => u.role === 'Trainee').sort((a,b) => (b.xp || 0) - (a.xp || 0))[1] && (() => {
+                      const user = users.filter(u => u.role === 'Trainee').sort((a,b) => (b.xp || 0) - (a.xp || 0))[1];
+                      return (
+                        <div className="flex flex-col items-center w-1/3 max-w-[120px]">
+                          <div className="relative mb-2">
+                            <img src={user.avatar} className="h-14 w-14 rounded-full border-4 border-slate-300 dark:border-slate-600 shadow-lg object-cover" />
+                            <div className="absolute -bottom-2 -right-2 bg-slate-300 text-slate-800 text-[10px] font-black h-6 w-6 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900">2</div>
+                          </div>
+                          <div className="text-[11px] font-bold text-center truncate w-full text-slate-700 dark:text-slate-300">{user.name.split(' ')[0]}</div>
+                          <div className="text-[10px] text-emerald-600 font-bold font-mono">{user.xp || 0} XP</div>
+                          <div className="w-full bg-gradient-to-t from-slate-200 to-slate-100 dark:from-slate-800 dark:to-slate-700 h-24 rounded-t-xl mt-2 border border-slate-300 dark:border-slate-600 border-b-0 shadow-inner"></div>
+                        </div>
+                      );
+                    })()}
+                    
+                    {/* Rank 1 */}
+                    {users.filter(u => u.role === 'Trainee').sort((a,b) => (b.xp || 0) - (a.xp || 0))[0] && (() => {
+                      const user = users.filter(u => u.role === 'Trainee').sort((a,b) => (b.xp || 0) - (a.xp || 0))[0];
+                      return (
+                        <div className="flex flex-col items-center w-1/3 max-w-[140px] z-10">
+                          <div className="relative mb-2">
+                            <img src={user.avatar} className="h-20 w-20 rounded-full border-4 border-amber-400 shadow-xl object-cover" />
+                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 text-amber-500"><Icon name="award" size={28} /></div>
+                            <div className="absolute -bottom-2 -right-1 bg-amber-400 text-amber-900 text-xs font-black h-7 w-7 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900">1</div>
+                          </div>
+                          <div className="text-xs font-black text-center truncate w-full text-slate-900 dark:text-white">{user.name.split(' ')[0]}</div>
+                          <div className="text-[11px] text-emerald-600 font-bold font-mono bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded-full mt-0.5">{user.xp || 0} XP</div>
+                          <div className="w-full bg-gradient-to-t from-amber-200 to-amber-100 dark:from-amber-600 dark:to-amber-500 h-32 rounded-t-xl mt-2 border border-amber-300 dark:border-amber-500 border-b-0 shadow-inner"></div>
+                        </div>
+                      );
+                    })()}
+
+                    {/* Rank 3 */}
+                    {users.filter(u => u.role === 'Trainee').sort((a,b) => (b.xp || 0) - (a.xp || 0))[2] && (() => {
+                      const user = users.filter(u => u.role === 'Trainee').sort((a,b) => (b.xp || 0) - (a.xp || 0))[2];
+                      return (
+                        <div className="flex flex-col items-center w-1/3 max-w-[120px]">
+                          <div className="relative mb-2">
+                            <img src={user.avatar} className="h-14 w-14 rounded-full border-4 border-amber-700/60 shadow-lg object-cover" />
+                            <div className="absolute -bottom-2 -right-2 bg-amber-700/80 text-white text-[10px] font-black h-6 w-6 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900">3</div>
+                          </div>
+                          <div className="text-[11px] font-bold text-center truncate w-full text-slate-700 dark:text-slate-300">{user.name.split(' ')[0]}</div>
+                          <div className="text-[10px] text-emerald-600 font-bold font-mono">{user.xp || 0} XP</div>
+                          <div className="w-full bg-gradient-to-t from-amber-900/30 to-amber-800/20 dark:from-slate-800 dark:to-slate-700 h-20 rounded-t-xl mt-2 border border-amber-900/40 dark:border-slate-600 border-b-0 shadow-inner"></div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  <div className="p-1 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                    <table className="w-full text-left text-xs">
+                      <thead>
+                        <tr className="border-b bg-slate-50 dark:bg-slate-800/50 text-slate-500 uppercase text-[10px]">
+                          <th className="py-3 px-4 rounded-tl-xl">Rank</th>
+                          <th className="py-3 px-4">Official</th>
+                          <th className="py-3 px-4 hidden sm:table-cell">Badges</th>
+                          <th className="py-3 px-4 hidden sm:table-cell text-center">Streak</th>
+                          <th className="py-3 px-4 text-right rounded-tr-xl">XP Points</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                        {users.filter(u => u.role === 'Trainee').sort((a,b) => (b.xp || 0) - (a.xp || 0)).map((t, idx) => (
+                          <tr key={t.id} className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${currentUser.id === t.id ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''}`}>
+                            <td className="py-3 px-4 font-bold text-slate-500">#{idx + 1}</td>
+                            <td className="py-3 px-4">
+                              <div className="flex items-center gap-2.5">
+                                <img src={t.avatar} className="h-8 w-8 rounded-full object-cover" />
+                                <div>
+                                  <div className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                                    {t.name}
+                                    {currentUser.id === t.id && <span className="text-[9px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-bold">YOU</span>}
+                                  </div>
+                                  <div className="text-[10px] text-slate-500">{t.department}</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="py-3 px-4 hidden sm:table-cell">
+                              <div className="flex -space-x-1">
+                                {(t.badges || []).slice(0,3).map((bid, i) => {
+                                  const bd = badges.find(b => b.id === bid);
+                                  return bd ? (
+                                    <div key={i} className={`h-6 w-6 rounded-full flex items-center justify-center ring-2 ring-white dark:ring-slate-900 ${bd.color}`} title={bd.name}>
+                                      <Icon name={bd.icon} size={10} />
+                                    </div>
+                                  ) : null;
+                                })}
+                                {(t.badges || []).length > 3 && (
+                                  <div className="h-6 w-6 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center ring-2 ring-white dark:ring-slate-900 text-[9px] font-bold text-slate-600 dark:text-slate-300">
+                                    +{(t.badges.length - 3)}
+                                  </div>
+                                )}
+                              </div>
+                            </td>
+                            <td className="py-3 px-4 hidden sm:table-cell text-center">
+                              <div className="inline-flex items-center gap-1 font-bold text-orange-500">
+                                <Icon name="flame" size={14} /> {t.streak || 0}
+                              </div>
+                            </td>
+                            <td className="py-3 px-4 text-right font-mono font-black text-emerald-600 text-sm">{t.xp || 0}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* TRAINER: AI ASSESSMENT GENERATOR (Flagship Feature) */}
+              {activeView === 'ai-generator' && (
+                <div className="space-y-6">
+                  <div className="p-6 rounded-3xl bg-slate-900 text-white">
+                    <span className="text-xs font-bold text-emerald-400 uppercase">AI Faculty Suite</span>
+                    <h1 className="text-2xl font-black mt-1">AI Assessment Generator</h1>
+                    <p className="text-xs text-slate-300 mt-1">Formulate rigorous scenario-based questionnaires with calibrated difficulty and automatic distractors.</p>
+                  </div>
+
+                  <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                      <div>
+                        <label className="block font-semibold mb-1">Knowledge Topic / Focus</label>
+                        <input type="text" value={aiTopic} onChange={e => setAiTopic(e.target.value)} className="w-full p-2.5 rounded-xl border bg-white dark:bg-slate-800" />
+                      </div>
+                      <div>
+                        <label className="block font-semibold mb-1">Difficulty Level</label>
+                        <select value={aiDifficulty} onChange={e => setAiDifficulty(e.target.value)} className="w-full p-2.5 rounded-xl border bg-white dark:bg-slate-800">
+                          <option value="Beginner">Beginner</option>
+                          <option value="Intermediate">Intermediate</option>
+                          <option value="Advanced">Advanced</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block font-semibold mb-1">Action</label>
+                        <button onClick={handleGenerateAiMcqs} disabled={aiGenerating} className="w-full py-2.5 rounded-xl bg-emerald-600 text-white font-bold shadow">
+                          {aiGenerating ? 'Generating with AI...' : 'Generate with AI'}
+                        </button>
+                      </div>
+                    </div>
+
+                    {aiGeneratedQuestions.length > 0 && (
+                      <div className="pt-4 border-t space-y-4">
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs font-bold text-emerald-600">{aiGeneratedQuestions.length} Questions Generated</span>
+                          <button onClick={handlePublishAiTest} className="px-4 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow">
+                            Publish to Trainee Catalog
+                          </button>
+                        </div>
+
+                        {aiGeneratedQuestions.map((q, i) => (
+                          <div key={i} className="p-4 rounded-xl border bg-slate-50 dark:bg-slate-800 text-xs space-y-2">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold">Q{i + 1}</span>
+                              <span className="text-[10px] bg-gradient-to-r from-emerald-500 to-cyan-500 text-white px-2 py-0.5 rounded-full font-bold">AI Generated</span>
+                            </div>
+                            <p className="font-semibold text-slate-900 dark:text-white">{q.question}</p>
+                            <div className="space-y-1">
+                              {q.options.map((opt, oIdx) => (
+                                <div key={oIdx} className={`p-2 rounded-lg border ${oIdx === q.correctAnswer ? 'border-emerald-500 bg-emerald-100 dark:bg-emerald-950 font-bold' : ''}`}>
+                                  {opt} {oIdx === q.correctAnswer && '✓ (Correct)'}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* TRAINER / ADMIN: FEEDBACK INSIGHTS (Flagship Feature) */}
+              {activeView === 'feedback-insights' && (
+                <div className="space-y-6">
+                  <div className="p-6 rounded-3xl bg-slate-900 text-white">
+                    <span className="text-xs font-bold text-emerald-400 uppercase">Sentiment Intelligence</span>
+                    <h1 className="text-2xl font-black mt-1">Feedback Insights & Topic Sentiment</h1>
+                    <p className="text-xs text-slate-300 mt-1">Natural language classification of learner reflections.</p>
+                  </div>
+
+                  {/* Overall Sentiment Distribution (72% Positive, 18% Neutral, 10% Negative) */}
+                  <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                    <h2 className="font-bold text-base text-slate-900 dark:text-white">Overall Sentiment Breakdown</h2>
+                    <div className="h-4 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden flex">
+                      <div className="h-full bg-emerald-500" style={{ width: '72%' }} title="72% Positive" />
+                      <div className="h-full bg-blue-500" style={{ width: '18%' }} title="18% Neutral" />
+                      <div className="h-full bg-red-500" style={{ width: '10%' }} title="10% Negative" />
+                    </div>
+                    <div className="grid grid-cols-3 gap-4 text-center text-xs">
+                      <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950 font-bold text-emerald-700">72% Positive</div>
+                      <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-950 font-bold text-blue-700">18% Neutral</div>
+                      <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950 font-bold text-red-700">10% Negative</div>
+                    </div>
+                  </div>
+
+                  {/* Top Positives vs Complaints */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3">
+                      <h3 className="font-bold text-xs text-emerald-600 uppercase">Top Positives</h3>
+                      <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-xs font-semibold">1. Trainer explanation & clarity (38%)</div>
+                      <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-xs font-semibold">2. Course content relevance (31%)</div>
+                      <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-xs font-semibold">3. Practical real-world examples (25%)</div>
+                    </div>
+
+                    <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3">
+                      <h3 className="font-bold text-xs text-red-600 uppercase">Top Complaints</h3>
+                      <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950 text-xs font-semibold">1. Audio quality in Module 3 (14%)</div>
+                      <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950 text-xs font-semibold">2. Course pacing too fast in vectorization (11%)</div>
+                      <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950 text-xs font-semibold">3. Difficult mathematical formulas (8%)</div>
+                    </div>
+                  </div>
+
+                  {/* Actionable Recommendations */}
+                  <div className="p-5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 text-xs space-y-2">
+                    <span className="font-bold text-indigo-700 uppercase">Actionable AI Recommendations:</span>
+                    <p className="text-slate-700 dark:text-slate-300">• "Consider improving audio quality in recorded lectures for Module 3."</p>
+                    <p className="text-slate-700 dark:text-slate-300">• "Learners requested slower explanations and step-by-step notebooks for advanced topics."</p>
+                  </div>
+                </div>
+              )}
+
+              {/* ADMIN: USER APPROVALS */}
+              {activeView === 'admin-users' && (
+                <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                  <h1 className="text-xl font-black text-slate-900 dark:text-white">User Approvals Portal</h1>
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="border-b text-slate-400 uppercase text-[10px]">
+                        <th className="py-2.5">Name</th>
+                        <th className="py-2.5">Role</th>
+                        <th className="py-2.5">Department</th>
+                        <th className="py-2.5">Status</th>
+                        <th className="py-2.5 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                      {users.map(u => (
+                        <tr key={u.id} className="hover:bg-slate-50 dark:hover:bg-slate-800">
+                          <td className="py-3 font-bold">{u.name}</td>
+                          <td className="py-3 font-semibold text-emerald-600">{u.role}</td>
+                          <td className="py-3 text-slate-500">{u.department}</td>
+                          <td className="py-3 font-bold">{u.status}</td>
+                          <td className="py-3 text-right">
+                            {u.status === 'Pending' ? (
+                              <button onClick={() => {
+                                setUsers(users.map(item => item.id === u.id ? { ...item, status: 'Active' } : item));
+                                showToast(`Approved ${u.name}!`);
+                              }} className="px-3 py-1 rounded-lg bg-emerald-600 text-white font-bold text-[11px]">
+                                Approve
+                              </button>
+                            ) : (
+                              <span className="text-slate-400">Verified</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* ADMIN: ANNOUNCEMENTS */}
+              {activeView === 'announcements' && (
+                <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                  <h1 className="text-xl font-black text-slate-900 dark:text-white">Admin Announcements Manager</h1>
+                  <div className="space-y-3">
+                    {announcements.map(ann => (
+                      <div key={ann.id} className="p-4 rounded-xl border bg-slate-50 dark:bg-slate-800 text-xs space-y-1">
+                        <div className="flex justify-between font-bold">
+                          <span className="text-emerald-600">{ann.category}</span>
+                          <span className="text-slate-400">{ann.date}</span>
+                        </div>
+                        <h4 className="font-bold text-sm text-slate-900 dark:text-white">{ann.title}</h4>
+                        <p className="text-slate-500">{ann.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </main>
+          </div>
+
+          {/* COURSE DETAIL MODAL */}
+          <Modal isOpen={!!selectedCourse} onClose={() => setSelectedCourse(null)} title={selectedCourse?.title} subtitle={`Trainer: ${selectedCourse?.trainerName}`}>
+            {selectedCourse && (
+              <div className="space-y-4 text-xs">
+                <img src={selectedCourse.image} alt={selectedCourse.title} className="h-44 w-full object-cover rounded-xl" />
+                <p className="text-slate-600 dark:text-slate-300">{selectedCourse.description}</p>
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
+                  <span className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Course Details:</span>
+                  <p>Duration: {selectedCourse.duration} • Rating: ★ {selectedCourse.rating}</p>
+                </div>
+                <div className="flex justify-end gap-2 pt-2">
+                  <button onClick={() => setSelectedCourse(null)} className="px-4 py-2 rounded-xl border">Close</button>
+                  <button onClick={() => { handleEnroll(selectedCourse); setSelectedCourse(null); }} className="px-5 py-2 rounded-xl bg-emerald-600 text-white font-bold">
+                    Enroll Now (Simulated)
+                  </button>
+                </div>
+              </div>
+            )}
+          </Modal>
+
+          {/* CERTIFICATE VIEWER & VERIFICATION MODAL */}
+          <Modal isOpen={!!selectedCert} onClose={() => setSelectedCert(null)} title="National Digital Credential" subtitle={`ID: ${selectedCert?.certificateNumber}`}>
+            {selectedCert && (
+              <div className="p-8 rounded-2xl bg-amber-50/50 dark:bg-slate-900 border-4 border-double border-amber-600/40 text-center space-y-4">
+                <Icon name="award" size={40} className="mx-auto text-amber-600" />
+                <h2 className="text-xl font-serif font-black uppercase text-slate-900 dark:text-white">Certificate of Competency</h2>
+                <p className="text-xs text-slate-500 italic">This certifies that</p>
+                <h3 className="text-2xl font-serif font-bold text-emerald-800 dark:text-emerald-300">{selectedCert.traineeName}</h3>
+                <p className="text-xs text-slate-600 dark:text-slate-300">has fulfilled all criteria for <strong>{selectedCert.courseName}</strong></p>
+                <div className="p-3 bg-white rounded-xl inline-block border shadow-sm">
+                  {/* Clean SVG QR */}
+                  <svg width="60" height="60" viewBox="0 0 100 100" fill="black" className="mx-auto">
+                    <rect x="10" y="10" width="25" height="25" fill="#0f172a"/>
+                    <rect x="65" y="10" width="25" height="25" fill="#0f172a"/>
+                    <rect x="10" y="65" width="25" height="25" fill="#0f172a"/>
+                    <rect x="40" y="40" width="20" height="20" fill="#059669"/>
+                  </svg>
+                  <span className="text-[10px] font-mono text-slate-500">{selectedCert.certificateNumber}</span>
+                </div>
+                <div className="pt-2 flex justify-center gap-3">
+                  <button onClick={() => setShowVerifyModal(true)} className="px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border-2 border-emerald-600 text-emerald-700 dark:text-emerald-300 font-bold text-xs">
+                    Verify Certificate Online
+                  </button>
+                  <button onClick={() => window.print()} className="px-4 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow">
+                    Print / Save PDF
+                  </button>
+                </div>
+              </div>
+            )}
+          </Modal>
+
+          {/* ONLINE QR VERIFICATION MODAL (Exact Prompt Requirement) */}
+          <Modal isOpen={showVerifyModal} onClose={() => setShowVerifyModal(false)} title="Official Verification Registry" subtitle="Direct Database Verification">
+            <div className="text-center space-y-4 text-xs">
+              <Icon name="check-circle" size={40} className="mx-auto text-emerald-600" />
+              <h3 className="text-lg font-black text-slate-900 dark:text-white">Status: VALID</h3>
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 text-left space-y-1.5">
+                <div className="flex justify-between"><span>Certificate ID:</span><span className="font-mono font-bold">{selectedCert?.certificateNumber}</span></div>
+                <div className="flex justify-between"><span>Trainee:</span><span className="font-bold">{selectedCert?.traineeName}</span></div>
+                <div className="flex justify-between"><span>Course:</span><span className="font-bold">{selectedCert?.courseName}</span></div>
+                <div className="flex justify-between"><span>Issued:</span><span>{selectedCert?.issueDate}</span></div>
+              </div>
+              <button onClick={() => setShowVerifyModal(false)} className="w-full py-2 rounded-xl bg-slate-800 text-white font-bold">Done</button>
+            </div>
+          </Modal>
+
+          {/* ADD SKILL MODAL */}
+          <Modal isOpen={showAddSkillModal} onClose={() => setShowAddSkillModal(false)} title="Add Competency to Passport" subtitle="Custom Skill Profiling">
+            <form onSubmit={handleAddSkill} className="space-y-4 text-xs">
+              <div>
+                <label className="block font-semibold mb-1">Competency Name</label>
+                <input type="text" required value={newSkillName} onChange={e => setNewSkillName(e.target.value)} placeholder="e.g. Econometric Modeling, PowerBI" className="w-full p-2.5 rounded-xl border bg-white dark:bg-slate-800" />
+              </div>
+              <div>
+                <div className="flex justify-between font-semibold mb-1"><span>Proficiency Level</span><span>{newSkillLevel}%</span></div>
+                <input type="range" min="10" max="100" value={newSkillLevel} onChange={e => setNewSkillLevel(e.target.value)} className="w-full accent-emerald-600" />
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button type="button" onClick={() => setShowAddSkillModal(false)} className="px-4 py-2 border rounded-xl">Cancel</button>
+                <button type="submit" className="px-5 py-2 bg-emerald-600 text-white font-bold rounded-xl">Save to Passport</button>
+              </div>
+            </form>
+          </Modal>
+
+          {/* MCQ ACTIVE TEST RUNNER MODAL */}
+          <Modal isOpen={!!activeAssessment} onClose={() => setActiveAssessment(null)} title={activeAssessment?.title} subtitle={`Subject: ${activeAssessment?.subject} • Time Limit: ${activeAssessment?.timeLimitMinutes} Mins`}>
+            {activeAssessment && (
+              <div className="space-y-4 text-xs">
+                {activeAssessment.questions?.map((q, idx) => (
+                  <div key={idx} className="p-4 rounded-xl border bg-slate-50 dark:bg-slate-800 space-y-2">
+                    <p className="font-bold text-slate-900 dark:text-white">Q{idx + 1}. {q.question}</p>
+                    <div className="space-y-1">
+                      {q.options.map((opt, oIdx) => (
+                        <div key={oIdx} className="p-2 rounded-lg border bg-white dark:bg-slate-900 flex justify-between">
+                          <span>{opt}</span>
+                          {oIdx === q.correctAnswer && <span className="font-bold text-emerald-600">Correct Answer</span>}
+                        </div>
+                      ))}
+                    </div>
+                    {q.explanation && (
+                      <p className="text-[11px] text-slate-500 pt-1"><strong>Explanation:</strong> {q.explanation}</p>
+                    )}
+                  </div>
+                ))}
+                <div className="flex justify-end pt-2">
+                  <button onClick={() => { setActiveAssessment(null); showToast('Assessment completed! 100% Score (+150 XP)!'); }} className="px-6 py-2.5 rounded-xl bg-emerald-600 text-white font-bold shadow">
+                    Submit & Finish Exam
+                  </button>
+                </div>
+              </div>
+            )}
+          </Modal>
+
+          {/* Toast */}
+          <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'success' })} />
+        </div>
+      );
+    }
+
+    // Mount to DOM
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+========================================================================
+CAPACITY CONNECT — Digital Capacity Building & Learning Management Portal
+Frontend-Only Prototype
+========================================================================
+
+HOW TO RUN:
+1. Double-click "index.html" in this folder.
+2. It will open instantly in your default web browser (Chrome, Edge, Firefox, Brave, Safari, Opera).
+
+NO SETUP REQUIRED:
+- No Node.js or npm needed
+- No Python or server needed
+- No database or backend needed
+- 100% self-contained frontend application with built-in mock data!
+
+FEATURES INCLUDED:
+- Modern Landing Page with Statistics, Announcements, and Featured Courses
+- 1-Click Role Switcher (Trainee, Trainer, Admin) in the top navigation
+- Trainee Dashboard & Competency Passport
+- Course Catalog & Module Details with simulated enrollment
+- Interactive Timed MCQ Assessment with instant grading & explanations
+- AI Assessment Generator (Trainer Feature)
+- AI Skill Gap Analyzer with 4-stage competency pipeline
+- Feedback Sentiment Analysis Analytics Dashboard (72% Positive / 18% Neutral / 10% Negative)
+- QR Verified Digital Certificates with live verification modal
+- Gamification, Badges, XP & Leaderboard
+- Admin Dashboard with Trainee Approvals & System Analytics
+- Full Light / Dark Mode toggle
+========================================================================
